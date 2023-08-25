@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  customerId Int      @id(map: "PK__Customer__B611CB7DB9794A51") @default(autoincrement())
+  name       String?  @db.VarChar(20)
+  email      String?  @unique(map: "UQ__Customer__AB6E616451B163FC") @db.VarChar(50)
+  Orders     Orders[]
+}
+
+model Events {
+  eventId        Int              @id(map: "PK__Events__2DC7BD0972F74C56") @default(autoincrement())
+  venueId        Int
+  eventTypeId    Int
+  name           String?          @db.VarChar(20)
+  startDate      DateTime?        @db.DateTime
+  endDate        DateTime?        @db.DateTime
+  description    String?          @db.VarChar(50)
+  EventType      EventType        @relation(fields: [eventTypeId], references: [eventTypeId], onDelete: Cascade, map: "FK_event_eventType")
+  Venues         Venues           @relation(fields: [venueId], references: [venueId], onDelete: Cascade, map: "FK_event_venueId")
+  TicketCategory TicketCategory[]
+}
+
+model EventType {
+  eventTypeId Int      @id(map: "PK__EventTyp__04ACC4BD0AE7E51D") @default(autoincrement())
+  name        String?  @db.VarChar(20)
+  Events      Events[]
+}
+
+model Orders {
+  orderId          Int             @id(map: "PK__Orders__0809335DB31F38D7") @default(autoincrement())
+  customerId       Int?
+  ticketCategoryId Int?
+  numberOfTickets  Int?
+  orderedAt        DateTime?       @db.DateTime
+  totalPrice       Float?
+  Customer         Customer?       @relation(fields: [customerId], references: [customerId], onDelete: Cascade, map: "FK_orders_customer")
+  TicketCategory   TicketCategory? @relation(fields: [ticketCategoryId], references: [ticketCategoryId], onDelete: Cascade, map: "FK_orders_ticketCategoryId")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B619F29ECB3") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model TicketCategory {
+  ticketCategoryId Int      @id(map: "PK__TicketCa__56F2E61ABCE1003D") @default(autoincrement())
+  eventId          Int
+  description      String?  @db.VarChar(50)
+  price            Float?
+  Orders           Orders[]
+  Events           Events   @relation(fields: [eventId], references: [eventId], onUpdate: NoAction, map: "FK_TicketCategory_Events")
+}
+
+model Venues {
+  venueId  Int      @id(map: "PK__Venues__4DDFB6FF243FCB7B") @default(autoincrement())
+  location String?  @db.VarChar(50)
+  type     String?  @db.VarChar(50)
+  capacity Int?
+  Events   Events[]
+}
