@@ -1,5 +1,6 @@
 class VenueDto{
-    constructor(location, type, capacity) {
+    constructor(venueId, location, type, capacity) {
+        this.venueId = venueId
         this.location = location;
         this.type = type;
         this.capacity = capacity
