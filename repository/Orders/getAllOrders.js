@@ -4,7 +4,6 @@ const orderToOrderDtoMapper = require('D:/Facultate/An II/Sem2/Practica/Endava/e
 router.get('/Orders', async (req, res) => {
     try {
         const orderDtos = await orderToOrderDtoMapper.fetchAndMapAllOrders();
-        console.log(orderDtos)
         res.status(200).json(orderDtos);
     } catch (error) {
         console.error('Error:', error);
